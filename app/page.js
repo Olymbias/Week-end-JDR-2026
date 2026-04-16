@@ -5,5 +5,4 @@ export default function Home() {
                       <p>Bienvenue sur la billetterie de la convention !</p>
                           </main>
                             )
-                            }
 }
