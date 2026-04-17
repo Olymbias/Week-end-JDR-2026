@@ -40,3 +40,4 @@ const supabase = createClient(
                                                                                                                                                     </main>
                                                                                                                                                       )
                                                                                                                                                     
+                                  }
