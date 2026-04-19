@@ -1,6 +1,6 @@
 export const metadata = {
-    title: 'Convention JDR 2026',
-      description: 'Billetterie de la convention JDR 2026',
+    title: 'Week-end JDR 2026',
+      description: 'Billetterie du week-end JDR 2026',
       }
 
       export default function RootLayout({ children }) {
