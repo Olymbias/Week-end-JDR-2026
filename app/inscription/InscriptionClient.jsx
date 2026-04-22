@@ -62,14 +62,14 @@ export default function InscriptionClient({ token }) {
   if (loading) return <main style={styles.main}><p>Chargement...</p></main>
   if (!token || !participant) return (
     <main style={styles.main}>
-      <h1 style={styles.titre}>🎲 Week-end JDR 2026</h1>
+      <h1 style={styles.titre}> Week-end JDR 2026</h1>
       <p style={styles.erreur}>Lien invalide. Contacte l'organisateur.</p>
     </main>
   )
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.titre}>🎲 Week-end JDR 2026</h1>
+      <h1 style={styles.titre}> Week-end JDR 2026</h1>
       <p style={styles.bienvenue}>Bonjour <strong>{participant.nom}</strong> !</p>
       <p style={styles.compteur}>
         {inscriptions.length}/3 parties réservées
@@ -95,9 +95,9 @@ export default function InscriptionClient({ token }) {
               </div>
               <h2 style={styles.nomPartie}>{partie.nom}</h2>
               {partie.systeme && <p style={styles.systeme}>{partie.systeme}</p>}
-              <p style={styles.mj}>🎭 {partie.mj_nom}</p>
+              <p style={styles.mj}> {partie.mj_nom}</p>
               {partie.duree && <p style={styles.info}>⏱ {partie.duree}</p>}
-              {partie.creneau && <p style={styles.info}>📅 {partie.creneau}</p>}
+              {partie.creneau && <p style={styles.info}> {partie.creneau}</p>}
               {partie.trigger_warning && <p style={styles.tw}>⚠️ {partie.trigger_warning}</p>}
               <div style={styles.placesRow}>
                 <span style={plein ? styles.placesFull : styles.placesOk}>
