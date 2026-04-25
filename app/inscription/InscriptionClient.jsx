@@ -72,8 +72,8 @@ setParties(parts || [])
     <main style={styles.main}>
       <h1 style={styles.titre}> Week-end JDR 2026</h1>
       <p style={styles.bienvenue}>Bonjour <strong>{participant.nom}</strong> !</p>
-      <p style={styles.compteur}>
-        {inscriptions.length}/3 parties réservées
+     <p style={styles.compteur}>
+  {inscriptions.length} partie(s) réservée(s)
       </p>
       {message && (
         <p style={message.includes('réussie') ? styles.succes : styles.erreur}>
