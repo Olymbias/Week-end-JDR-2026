@@ -30,7 +30,7 @@ export default function InscriptionClient({ token }) {
   .from('parties')
   .select('*')
   .eq('visible', true)
-  .order('creneau')
+  .order('ordre')
 setParties(parts || [])
 
       const { data: ins } = await supabase

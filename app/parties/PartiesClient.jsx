@@ -18,7 +18,7 @@ export default function PartiesClient() {
       const { data } = await supabase
         .from('parties')
         .select('*')
-        .order('code')
+        .order('ordre')
       setParties(data || [])
       setLoading(false)
     }
