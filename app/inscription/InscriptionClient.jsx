@@ -97,7 +97,6 @@ setParties(parts || [])
               <h2 style={styles.nomPartie}>{partie.nom}</h2>
               {partie.systeme && <p style={styles.systeme}>{partie.systeme}</p>}
               <p style={styles.mj}> {partie.mj_nom}</p>
-              {partie.duree && <p style={styles.info}>⏱ {partie.duree}</p>}
               {partie.creneau && <p style={styles.info}> {partie.creneau}</p>}
               {partie.trigger_warning && <p style={styles.tw}>⚠️ {partie.trigger_warning}</p>}
               <div style={styles.placesRow}>
