@@ -12,6 +12,7 @@ export default function InscriptionClient({ token }) {
   const [participant, setParticipant] = useState(null)
   const [parties, setParties] = useState([])
   const [inscriptions, setInscriptions] = useState([])
+  const [limite, setLimite] = useState(0)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
 
@@ -26,12 +27,20 @@ export default function InscriptionClient({ token }) {
       if (!p) { setLoading(false); return }
       setParticipant(p)
 
+      const cleConfig = p.role === 'orga' ? 'limite_orga' : p.role === 'mj' ? 'limite_mj' : 'limite_joueur'
+      const { data: config } = await supabase
+        .from('configuration')
+        .select('valeur')
+        .eq('cle', cleConfig)
+        .single()
+      setLimite(config ? parseInt(config.valeur) : 0)
+
       const { data: parts } = await supabase
-  .from('parties')
-  .select('*')
-  .eq('visible', true)
-  .order('ordre')
-setParties(parts || [])
+        .from('parties')
+        .select('*')
+        .eq('visible', true)
+        .order('ordre')
+      setParties(parts || [])
 
       const { data: ins } = await supabase
         .from('inscriptions')
@@ -63,18 +72,16 @@ setParties(parts || [])
   if (loading) return <main style={styles.main}><p>Chargement...</p></main>
   if (!token || !participant) return (
     <main style={styles.main}>
-      <h1 style={styles.titre}> Week-end JDR 2026</h1>
+      <h1 style={styles.titre}>Week-end JDR 2026</h1>
       <p style={styles.erreur}>Lien invalide. Contacte l'organisateur.</p>
     </main>
   )
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.titre}> Week-end JDR 2026</h1>
+      <h1 style={styles.titre}>Week-end JDR 2026</h1>
       <p style={styles.bienvenue}>Bonjour <strong>{participant.nom}</strong> !</p>
-     <p style={styles.compteur}>
-  {inscriptions.length} partie(s) réservée(s)
-      </p>
+      <p style={styles.compteur}>{inscriptions.length} partie(s) réservée(s)</p>
       {message && (
         <p style={message.includes('réussie') ? styles.succes : styles.erreur}>
           {message}
@@ -84,6 +91,7 @@ setParties(parts || [])
         {parties.map(partie => {
           const dejainscrit = inscriptions.includes(partie.id)
           const plein = partie.places_restantes <= 0
+          const limitAtteinte = inscriptions.length >= limite
           return (
             <div key={partie.id} style={{
               ...styles.carte,
@@ -96,20 +104,20 @@ setParties(parts || [])
               </div>
               <h2 style={styles.nomPartie}>{partie.nom}</h2>
               {partie.systeme && <p style={styles.systeme}>{partie.systeme}</p>}
-              <p style={styles.mj}> {partie.mj_nom}</p>
-              {partie.creneau && <p style={styles.info}> {partie.creneau}</p>}
-              {partie.trigger_warning && <p style={styles.tw}>⚠️ {partie.trigger_warning}</p>}
+              <p style={styles.mj}>{partie.mj_nom}</p>
+              {partie.creneau && <p style={styles.info}>{partie.creneau}</p>}
+              {partie.trigger_warning && <p style={styles.tw}>TW : {partie.trigger_warning}</p>}
               <div style={styles.placesRow}>
                 <span style={plein ? styles.placesFull : styles.placesOk}>
                   {plein ? 'Complet' : `${partie.places_restantes} place(s)`}
                 </span>
               </div>
               <button
-                style={dejainscrit ? styles.btnInscrit : plein ? styles.btnPlein : styles.btn}
-                disabled={dejainscrit || plein || inscriptions.length >= 3}
+                style={dejainscrit ? styles.btnInscrit : plein || limitAtteinte ? styles.btnPlein : styles.btn}
+                disabled={dejainscrit || plein || limitAtteinte}
                 onClick={() => inscrire(partie.id)}
               >
-                {dejainscrit ? '✓ Inscrit(e)' : plein ? 'Complet' : 'Réserver'}
+                {dejainscrit ? '✓ Inscrit(e)' : plein ? 'Complet' : limitAtteinte ? 'Limite atteinte' : 'Réserver'}
               </button>
             </div>
           )
