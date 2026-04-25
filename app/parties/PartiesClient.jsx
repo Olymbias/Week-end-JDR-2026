@@ -13,7 +13,7 @@ export default function PartiesClient() {
   const [loading, setLoading] = useState(true)
   const [filtre, setFiltre] = useState('toutes')
 
-  useEffect(() => {
+  useEffect()
     async function chargerParties() {
       const { data } = await supabase
         .from('parties')
@@ -22,8 +22,15 @@ export default function PartiesClient() {
       setParties(data || [])
       setLoading(false)
     }
-    chargerParties()
-  }, [])
+    async function chargerParties() {
+  const { data } = await supabase
+    .from('parties')
+    .select('*')
+    .eq('visible', true)
+    .order('creneau')
+  setParties(data || [])
+  setLoading(false)
+}
 
   const partiesFiltrees = parties.filter(p => {
     if (filtre === 'novices') return p.adapte_novices

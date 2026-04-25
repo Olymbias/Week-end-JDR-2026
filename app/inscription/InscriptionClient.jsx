@@ -27,10 +27,11 @@ export default function InscriptionClient({ token }) {
       setParticipant(p)
 
       const { data: parts } = await supabase
-        .from('parties')
-        .select('*')
-        .order('code')
-      setParties(parts || [])
+  .from('parties')
+  .select('*')
+  .eq('visible', true)
+  .order('creneau')
+setParties(parts || [])
 
       const { data: ins } = await supabase
         .from('inscriptions')
