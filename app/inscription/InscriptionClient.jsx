@@ -27,7 +27,7 @@ export default function InscriptionClient({ token }) {
       if (!p) { setLoading(false); return }
       setParticipant(p)
 
-      const cleConfig = p.role === 'orga' ? 'limite_orga' : p.role === 'mj' ? 'limite_mj' : 'limite_joueur'
+      const cleConfig = p.role === 'orga' ? 'limite_orga' : p.role === 'mj' ? 'limite_mj' : p.role === 'prioritaire' ? 'limite_prioritaire' : 'limite_joueur'
       const { data: config } = await supabase
         .from('configuration')
         .select('valeur')
