@@ -69,6 +69,25 @@ export default function InscriptionClient({ token }) {
     }
   }
 
+  async function desinscrire(partieId) {
+    setMessage('')
+    const { error } = await supabase
+      .from('inscriptions')
+      .delete()
+      .eq('participant_id', participant.id)
+      .eq('partie_id', partieId)
+
+    if (error) {
+      setMessage('Erreur lors de la désinscription')
+    } else {
+      setInscriptions(inscriptions.filter(id => id !== partieId))
+      setParties(parties.map(p =>
+        p.id === partieId ? { ...p, places_restantes: p.places_restantes + 1 } : p
+      ))
+      setMessage('Désinscription effectuée.')
+    }
+  }
+
   if (loading) return <main style={styles.main}><p>Chargement...</p></main>
   if (!token || !participant) return (
     <main style={styles.main}>
@@ -77,16 +96,38 @@ export default function InscriptionClient({ token }) {
     </main>
   )
 
+  const mesParties = parties.filter(p => inscriptions.includes(p.id))
+
   return (
     <main style={styles.main}>
       <h1 style={styles.titre}>Week-end JDR 2026</h1>
       <p style={styles.bienvenue}>Bonjour <strong>{participant.nom}</strong> !</p>
       <p style={styles.compteur}>{inscriptions.length} partie(s) réservée(s)</p>
+
       {message && (
-        <p style={message.includes('réussie') ? styles.succes : styles.erreur}>
+        <p style={message.includes('réussie') || message.includes('effectuée') ? styles.succes : styles.erreur}>
           {message}
         </p>
       )}
+
+      {mesParties.length > 0 && (
+        <div style={styles.recap}>
+          <h2 style={styles.recapTitre}>Mes réservations</h2>
+          {mesParties.map(p => (
+            <div key={p.id} style={styles.recapLigne}>
+              <div>
+                <strong>{p.nom}</strong>
+                <span style={styles.recapInfo}> — {p.mj_nom} — {p.creneau}</span>
+              </div>
+              <button style={styles.btnDesinscrire} onClick={() => desinscrire(p.id)}>
+                Annuler
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <h2 style={styles.titreListe}>Toutes les parties</h2>
       <div style={styles.grille}>
         {parties.map(partie => {
           const dejainscrit = inscriptions.includes(partie.id)
@@ -134,6 +175,12 @@ const styles = {
   compteur: { textAlign: 'center', fontSize: '1rem', color: '#4f46e5', fontWeight: 'bold', marginBottom: '15px' },
   succes: { textAlign: 'center', color: '#065f46', background: '#d1fae5', padding: '10px', borderRadius: '8px', marginBottom: '15px' },
   erreur: { textAlign: 'center', color: '#991b1b', background: '#fee2e2', padding: '10px', borderRadius: '8px', marginBottom: '15px' },
+  recap: { background: '#f3f4f6', borderRadius: '12px', padding: '20px', marginBottom: '30px' },
+  recapTitre: { fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '12px', color: '#2E4057' },
+  recapLigne: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #e5e7eb' },
+  recapInfo: { color: '#6b7280', fontSize: '0.9rem' },
+  btnDesinscrire: { padding: '6px 14px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' },
+  titreListe: { fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '20px', color: '#2E4057' },
   grille: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' },
   carte: { border: '2px solid #e5e7eb', borderRadius: '12px', padding: '20px', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' },
   carteHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' },
