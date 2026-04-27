@@ -27,22 +27,6 @@ export default function InscriptionClient({ token }) {
       if (!p) { setLoading(false); return }
       setParticipant(p)
 
-      useEffect(() => {
-  const channel = supabase
-    .channel('parties-updates')
-    .on('postgres_changes', 
-      { event: 'UPDATE', schema: 'public', table: 'parties' },
-      (payload) => {
-        setParties(prev => prev.map(p => 
-          p.id === payload.new.id ? { ...p, places_restantes: payload.new.places_restantes } : p
-        ))
-      }
-    )
-    .subscribe()
-
-  return () => supabase.removeChannel(channel)
-}, [])
-
       const cleConfig = p.role === 'orga' ? 'limite_orga' : p.role === 'mj' ? 'limite_mj' : p.role === 'prioritaire' ? 'limite_prioritaire' : 'limite_joueur'
       const { data: config } = await supabase
         .from('configuration')
@@ -67,6 +51,22 @@ export default function InscriptionClient({ token }) {
     }
     charger()
   }, [token])
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('parties-updates')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'parties' },
+        (payload) => {
+          setParties(prev => prev.map(p =>
+            p.id === payload.new.id ? { ...p, places_restantes: payload.new.places_restantes } : p
+          ))
+        }
+      )
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
+  }, [])
 
   async function inscrire(partieId) {
     setMessage('')
