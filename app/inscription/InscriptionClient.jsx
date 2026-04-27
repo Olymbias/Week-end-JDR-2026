@@ -71,6 +71,7 @@ export default function InscriptionClient({ token }) {
 
   async function desinscrire(partieId) {
     setMessage('')
+    const partieActuelle = parties.find(p => p.id === partieId)
     const { error } = await supabase
       .from('inscriptions')
       .delete()
@@ -80,6 +81,11 @@ export default function InscriptionClient({ token }) {
     if (error) {
       setMessage('Erreur lors de la désinscription')
     } else {
+      await supabase
+        .from('parties')
+        .update({ places_restantes: partieActuelle.places_restantes + 1 })
+        .eq('id', partieId)
+
       setInscriptions(inscriptions.filter(id => id !== partieId))
       setParties(parties.map(p =>
         p.id === partieId ? { ...p, places_restantes: p.places_restantes + 1 } : p
