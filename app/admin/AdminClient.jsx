@@ -18,7 +18,7 @@ export default function AdminClient() {
   useEffect(() => {
     async function charger() {
       const [{ data: parts }, { data: parts2 }, { data: ins }] = await Promise.all([
-        supabase.from('parties').select('*').order('code'),
+        supabase.from('parties').select('*').order('ordre'),
         supabase.from('participants').select('*').order('nom'),
         supabase.from('inscriptions').select('*, participants(nom, email), parties(code, nom)')
       ])
@@ -53,7 +53,7 @@ export default function AdminClient() {
 
   return (
     <main style={s.main}>
-      <h1 style={s.titre}>⚙️ Admin — Week-end JDR 2026</h1>
+      <h1 style={s.titre}>Admin — Week-end JDR 2026</h1>
 
       <div style={s.stats}>
         <div style={s.stat}><strong>{parties.length}</strong><span>Parties</span></div>
@@ -72,9 +72,10 @@ export default function AdminClient() {
         <button style={onglet === 'parties' ? s.ongletActif : s.onglet} onClick={() => setOnglet('parties')}>Parties</button>
         <button style={onglet === 'participants' ? s.ongletActif : s.onglet} onClick={() => setOnglet('participants')}>Participants</button>
         <button style={onglet === 'inscriptions' ? s.ongletActif : s.onglet} onClick={() => setOnglet('inscriptions')}>Inscriptions</button>
+        <button style={onglet === 'details' ? s.ongletActif : s.onglet} onClick={() => setOnglet('details')}>Parties détaillées</button>
       </div>
 
-      <button style={s.export} onClick={exportCSV}>⬇️ Exporter CSV</button>
+      <button style={s.export} onClick={exportCSV}>Exporter CSV</button>
 
       {onglet === 'parties' && (
         <table style={s.table}>
@@ -92,7 +93,7 @@ export default function AdminClient() {
                 <td style={s.td}>{p.nom}</td>
                 <td style={s.td}>{p.mj_nom}</td>
                 <td style={s.td}>{p.places_total}</td>
-                <td style={{...s.td, color: p.places_restantes === 0 ? '#991b1b' : '#065f46', fontWeight: 'bold'}}>{p.places_restantes}</td>
+                <td style={{...s.td, color: p.places_restantes <= 0 ? '#991b1b' : '#065f46', fontWeight: 'bold'}}>{p.places_restantes}</td>
                 <td style={s.td}>{p.creneau || '—'}</td>
               </tr>
             ))}
@@ -104,7 +105,7 @@ export default function AdminClient() {
         <table style={s.table}>
           <thead>
             <tr>
-              {['Nom', 'Email', 'Inscriptions', 'Lien'].map(h => (
+              {['Nom', 'Email', 'Rôle', 'Inscriptions', 'Lien'].map(h => (
                 <th key={h} style={s.th}>{h}</th>
               ))}
             </tr>
@@ -116,7 +117,8 @@ export default function AdminClient() {
                 <tr key={p.id}>
                   <td style={s.td}>{p.nom}</td>
                   <td style={s.td}>{p.email}</td>
-                  <td style={{...s.td, color: nb >= 3 ? '#065f46' : '#b45309', fontWeight: 'bold'}}>{nb}/3</td>
+                  <td style={s.td}>{p.role}</td>
+                  <td style={{...s.td, color: nb >= 3 ? '#065f46' : '#b45309', fontWeight: 'bold'}}>{nb}</td>
                   <td style={s.td}>
                     <a href={`/inscription?token=${p.token}`} target="_blank" style={s.lien}>Voir</a>
                   </td>
@@ -148,6 +150,33 @@ export default function AdminClient() {
           </tbody>
         </table>
       )}
+
+      {onglet === 'details' && (
+        <div>
+          {parties.map(p => {
+            const inscrits = inscriptions.filter(i => i.parties?.code === p.code)
+            return (
+              <div key={p.id} style={{ marginBottom: '20px', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '15px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ margin: 0 }}>{p.code} — {p.nom}</h3>
+                  <span style={{ color: inscrits.length >= p.places_total ? '#991b1b' : '#065f46', fontWeight: 'bold' }}>
+                    {inscrits.length}/{p.places_total}
+                  </span>
+                </div>
+                <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '5px 0' }}>{p.mj_nom} — {p.creneau}</p>
+                {inscrits.length === 0
+                  ? <p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Aucun inscrit</p>
+                  : <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+                      {inscrits.map(i => (
+                        <li key={i.id} style={{ fontSize: '0.9rem' }}>{i.participants?.nom}</li>
+                      ))}
+                    </ul>
+                }
+              </div>
+            )
+          })}
+        </div>
+      )}
     </main>
   )
 }
@@ -157,7 +186,7 @@ const s = {
   titre: { fontSize: '1.8rem', marginBottom: '20px' },
   stats: { display: 'flex', gap: '15px', marginBottom: '25px', flexWrap: 'wrap' },
   stat: { background: '#f3f4f6', borderRadius: '12px', padding: '15px 25px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.9rem', color: '#6b7280' },
-  onglets: { display: 'flex', gap: '10px', marginBottom: '15px' },
+  onglets: { display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' },
   onglet: { padding: '8px 20px', borderRadius: '20px', border: '2px solid #ccc', background: 'white', cursor: 'pointer' },
   ongletActif: { padding: '8px 20px', borderRadius: '20px', border: '2px solid #4f46e5', background: '#4f46e5', color: 'white', cursor: 'pointer' },
   export: { padding: '8px 20px', background: '#065f46', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', marginBottom: '15px' },
