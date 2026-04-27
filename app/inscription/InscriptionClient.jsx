@@ -78,9 +78,6 @@ export default function InscriptionClient({ token }) {
       setMessage(data?.erreur || 'Erreur lors de l\'inscription')
     } else {
       setInscriptions([...inscriptions, partieId])
-      setParties(parties.map(p =>
-        p.id === partieId ? { ...p, places_restantes: p.places_restantes - 1 } : p
-      ))
       setMessage('Inscription réussie !')
     }
   }
@@ -103,9 +100,6 @@ export default function InscriptionClient({ token }) {
         .eq('id', partieId)
 
       setInscriptions(inscriptions.filter(id => id !== partieId))
-      setParties(parties.map(p =>
-        p.id === partieId ? { ...p, places_restantes: p.places_restantes + 1 } : p
-      ))
       setMessage('Désinscription effectuée.')
     }
   }
