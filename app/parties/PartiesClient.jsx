@@ -13,24 +13,18 @@ export default function PartiesClient() {
   const [loading, setLoading] = useState(true)
   const [filtre, setFiltre] = useState('toutes')
 
-  useEffect()
+  useEffect(() => {
     async function chargerParties() {
       const { data } = await supabase
         .from('parties')
         .select('*')
+        .eq('visible', true)
         .order('ordre')
       setParties(data || [])
       setLoading(false)
     }
-    async function chargerParties() {
-  const { data } = await supabase
-    .from('parties')
-    .select('*')
-    .eq('visible', true)
-    .order('creneau')
-  setParties(data || [])
-  setLoading(false)
-}
+    chargerParties()
+  }, [])
 
   const partiesFiltrees = parties.filter(p => {
     if (filtre === 'novices') return p.adapte_novices
@@ -42,7 +36,7 @@ export default function PartiesClient() {
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.titre}>🎲 Week-end JDR 2026</h1>
+      <h1 style={styles.titre}>Week-end JDR 2026</h1>
       <p style={styles.soustitre}>{parties.length} parties au programme</p>
       <div style={styles.filtres}>
         <button style={filtre === 'toutes' ? styles.filtrActif : styles.filtre} onClick={() => setFiltre('toutes')}>Toutes</button>
@@ -58,10 +52,9 @@ export default function PartiesClient() {
             </div>
             <h2 style={styles.nomPartie}>{partie.nom}</h2>
             {partie.systeme && <p style={styles.systeme}>{partie.systeme}</p>}
-            <p style={styles.mj}>🎭 {partie.mj_nom}</p>
-            {partie.duree && <p style={styles.info}>⏱ {partie.duree}</p>}
-            {partie.creneau && <p style={styles.info}>📅 {partie.creneau}</p>}
-            {partie.trigger_warning && <p style={styles.tw}>⚠️ {partie.trigger_warning}</p>}
+            <p style={styles.mj}>MJ : {partie.mj_nom}</p>
+            {partie.creneau && <p style={styles.info}>{partie.creneau}</p>}
+            {partie.trigger_warning && <p style={styles.tw}>TW : {partie.trigger_warning}</p>}
             <div style={styles.places}>
               <span style={partie.places_restantes > 0 ? styles.placesOk : styles.placesFull}>
                 {partie.places_restantes > 0 ? `${partie.places_restantes} place(s)` : 'Complet'}
