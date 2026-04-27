@@ -27,7 +27,11 @@ export default function InscriptionClient({ token }) {
       if (!p) { setLoading(false); return }
       setParticipant(p)
 
-      const cleConfig = p.role === 'orga' ? 'limite_orga' : p.role === 'mj' ? 'limite_mj' : p.role === 'prioritaire' ? 'limite_prioritaire' : 'limite_joueur'
+      const cleConfig = p.role === 'orga' ? 'limite_orga' 
+        : p.role === 'mj' ? 'limite_mj' 
+        : p.role === 'beta' ? 'limite_beta'
+        : p.role === 'prioritaire' ? 'limite_prioritaire' 
+        : 'limite_joueur'
       const { data: config } = await supabase
         .from('configuration')
         .select('valeur')
@@ -198,4 +202,20 @@ const styles = {
   recapInfo: { color: '#6b7280', fontSize: '0.9rem' },
   btnDesinscrire: { padding: '6px 14px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' },
   titreListe: { fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '20px', color: '#2E4057' },
-  grille: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20
+  grille: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' },
+  carte: { border: '2px solid #e5e7eb', borderRadius: '12px', padding: '20px', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' },
+  carteHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' },
+  code: { fontSize: '0.8rem', color: '#9ca3af', fontWeight: 'bold' },
+  badge: { fontSize: '0.75rem', background: '#d1fae5', color: '#065f46', padding: '3px 8px', borderRadius: '10px' },
+  nomPartie: { fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 5px 0' },
+  systeme: { color: '#6b7280', fontSize: '0.9rem', margin: '0 0 8px 0', fontStyle: 'italic' },
+  mj: { margin: '4px 0', fontSize: '0.9rem' },
+  info: { margin: '4px 0', fontSize: '0.9rem', color: '#4b5563' },
+  tw: { margin: '8px 0', fontSize: '0.8rem', color: '#b45309', background: '#fef3c7', padding: '6px', borderRadius: '6px' },
+  placesRow: { marginTop: '12px', marginBottom: '10px' },
+  placesOk: { background: '#d1fae5', color: '#065f46', padding: '4px 10px', borderRadius: '10px', fontSize: '0.85rem' },
+  placesFull: { background: '#fee2e2', color: '#991b1b', padding: '4px 10px', borderRadius: '10px', fontSize: '0.85rem' },
+  btn: { width: '100%', padding: '10px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginTop: '5px' },
+  btnInscrit: { width: '100%', padding: '10px', background: '#d1fae5', color: '#065f46', border: 'none', borderRadius: '8px', cursor: 'default', fontWeight: 'bold', marginTop: '5px' },
+  btnPlein: { width: '100%', padding: '10px', background: '#e5e7eb', color: '#9ca3af', border: 'none', borderRadius: '8px', cursor: 'default', fontWeight: 'bold', marginTop: '5px' },
+}
